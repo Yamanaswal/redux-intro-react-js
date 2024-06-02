@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useAccount from "./hooks/useAccount";
 
 function AccountOperations() {
   const [depositAmount, setDepositAmount] = useState("");
@@ -6,14 +7,41 @@ function AccountOperations() {
   const [loanAmount, setLoanAmount] = useState("");
   const [loanPurpose, setLoanPurpose] = useState("");
   const [currency, setCurrency] = useState("USD");
+  const { depositMoney, withdrawalMoney, requestLoanMoney, payLoanMoney, account } = useAccount();
+  const { loan: currentLoan, loanPurpose: currentLoanPurpose } = account;
 
-  function handleDeposit() {}
+  function handleDeposit() {
+    if (!depositAmount) {
+      alert("Please enter deposit amount.");
+      return;
+    }
+    depositMoney(depositAmount);
+    setDepositAmount("");
+  }
 
-  function handleWithdrawal() {}
+  function handleWithdrawal() {
+    if (!withdrawalAmount) {
+      alert("Please enter withdrawal amount.");
+      return;
+    }
+    withdrawalMoney(depositAmount);
+    setWithdrawalAmount("");
+  }
 
-  function handleRequestLoan() {}
+  function handleRequestLoan() {
+    if (!loanAmount || !loanPurpose) {
+      alert("Please enter loan amount.");
+      return;
+    }
 
-  function handlePayLoan() {}
+    requestLoanMoney(loanAmount, loanPurpose);
+    setLoanAmount("");
+    setLoanPurpose("");
+  }
+
+  function handlePayLoan() {
+    payLoanMoney();
+  }
 
   return (
     <div>
@@ -66,10 +94,15 @@ function AccountOperations() {
           <button onClick={handleRequestLoan}>Request loan</button>
         </div>
 
-        <div>
-          <span>Pay back $X</span>
-          <button onClick={handlePayLoan}>Pay loan</button>
-        </div>
+        {currentLoan > 0 &&
+          (
+            <div>
+              <span>Pay back ${currentLoan} ({currentLoanPurpose})</span>
+              <button onClick={handlePayLoan}>Pay loan</button>
+            </div>
+          )
+        }
+
       </div>
     </div>
   );

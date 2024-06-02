@@ -1,5 +1,10 @@
+import useCustomer from "./hooks/useCustomer";
+
 function Customer() {
-  return <h2>👋 Welcome, %NAME%</h2>;
+
+  const { customerName } = useCustomer();
+
+  return <h2>👋 Welcome, {customerName === "" ? "No User Yet! " : customerName}</h2>;
 }
 
 export default Customer;

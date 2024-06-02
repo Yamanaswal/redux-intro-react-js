@@ -1,10 +1,19 @@
 import { useState } from "react";
+import useCustomer from "./hooks/useCustomer";
 
 function Customer() {
   const [fullName, setFullName] = useState("");
   const [nationalId, setNationalId] = useState("");
 
-  function handleClick() {}
+  const { createNewCustomer } = useCustomer();
+
+  function handleClick() {
+    if (!fullName || !nationalId) {
+      alert("Please enter your fullname and national id.");
+      return;
+    }
+    createNewCustomer(fullName, nationalId);
+  }
 
   return (
     <div>
