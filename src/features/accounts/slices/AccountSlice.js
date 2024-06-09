@@ -5,6 +5,7 @@ const initialStateAccount = {
     balance: 0,
     loan: 0,
     loanPurpose: "",
+    isLoading: false
 }
 
 //Step: 2) Create Reducer Function - similar like useReducer
@@ -13,7 +14,8 @@ export default function accountReducer(state = initialStateAccount, action) {
         case "account/deposit":
             return {
                 ...state,
-                balance: state.balance + action.payload
+                balance: state.balance + action.payload,
+                isLoading: false
             };
 
         case "account/withdraw":
@@ -43,6 +45,13 @@ export default function accountReducer(state = initialStateAccount, action) {
                 balance: state.balance - state.loan
             };
 
+        case "account/convertingCurrency":
+
+            return {
+                ...state,
+                isLoading: true
+            };
+
         default:
             return state;
 
@@ -52,6 +61,28 @@ export default function accountReducer(state = initialStateAccount, action) {
 /* Action Creators */
 export function deposit(amount) {
     return { type: "account/deposit", payload: amount };
+}
+
+export function depositConvertThunks(amount, currency) {
+
+    //thunks
+    return async function (dispatch, getState) {
+        //loading api
+        dispatch({ type: "account/convertingCurrency" })
+
+        //Api Call
+        const host = 'api.frankfurter.app';
+        const response = await fetch(`https://${host}/latest?amount=${amount}&from=${currency}&to=USD`)
+        const data = await response.json();
+        console.log(data);
+        const convertAmount = data.rates.USD;
+
+        //return action
+        dispatch({
+            type: "account/deposit",
+            payload: convertAmount
+        });
+    }
 }
 
 export function withdraw(amount) {
@@ -73,3 +104,5 @@ export function payLoan() {
         type: "account/payLoan",
     };
 }
+
+

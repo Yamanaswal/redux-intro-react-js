@@ -7,15 +7,21 @@ function AccountOperations() {
   const [loanAmount, setLoanAmount] = useState("");
   const [loanPurpose, setLoanPurpose] = useState("");
   const [currency, setCurrency] = useState("USD");
+
   const { depositMoney, withdrawalMoney, requestLoanMoney, payLoanMoney, account } = useAccount();
-  const { loan: currentLoan, loanPurpose: currentLoanPurpose } = account;
+
+  const {
+    loan: currentLoan,
+    loanPurpose: currentLoanPurpose,
+    isLoading
+  } = account;
 
   function handleDeposit() {
     if (!depositAmount) {
       alert("Please enter deposit amount.");
       return;
     }
-    depositMoney(depositAmount);
+    depositMoney(depositAmount, currency);
     setDepositAmount("");
   }
 
@@ -63,7 +69,11 @@ function AccountOperations() {
             <option value="GBP">British Pound</option>
           </select>
 
-          <button onClick={handleDeposit}>Deposit {depositAmount}</button>
+
+          <button onClick={handleDeposit} disabled={isLoading}>
+            {isLoading ? "Converting..." : `Deposit ${depositAmount}`}
+          </button>
+
         </div>
 
         <div>

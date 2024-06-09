@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { deposit, payLoan, requestLoan, withdraw } from "../slices/AccountSlice";
+import { deposit, depositConvertThunks, payLoan, requestLoan, withdraw } from "../slices/AccountSlice";
 
 
 function useAccount() {
@@ -10,8 +10,13 @@ function useAccount() {
         return store.account;
     });
 
-    function depositMoney(amount) {
-        dispatch(deposit(amount));
+    function depositMoney(amount, currency) {
+        if (currency === "USD") {
+            dispatch(deposit(amount));
+        } else {
+            //convert to USD, then update balance 
+            dispatch(depositConvertThunks(amount, currency));
+        }
     }
 
     function withdrawalMoney(amount) {
