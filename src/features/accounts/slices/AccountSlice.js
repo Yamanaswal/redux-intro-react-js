@@ -1,5 +1,8 @@
 //Account Redux
 
+import { createSlice } from "@reduxjs/toolkit";
+
+
 //Step: 1) create init state
 const initialStateAccount = {
     balance: 0,
@@ -8,60 +11,67 @@ const initialStateAccount = {
     isLoading: false
 }
 
-//Step: 2) Create Reducer Function - similar like useReducer
-export default function accountReducer(state = initialStateAccount, action) {
-    switch (action.type) {
-        case "account/deposit":
-            return {
-                ...state,
-                balance: state.balance + action.payload,
-                isLoading: false
-            };
 
-        case "account/withdraw":
-            return {
-                ...state,
-                balance: state.balance - action.payload
-            };
+const accountSlice = createSlice({
+    //reducer name - account
+    name: "account",
 
-        case "account/requestLoan":
+    //init state
+    initialState: initialStateAccount,
 
-            if (state.loan > 0) {
-                return state;
+    //Create Reducer Function and actions
+    reducers: {
+        deposit: {
+            reducer(state, action) {
+                state.balance = state.balance + action.payload;
+                state.isLoading = false;
             }
-            return {
-                ...state,
-                loan: action.payload.amount,
-                loanPurpose: action.payload.purpose,
-                balance: state.balance + action.payload.amount
-            };
+        },
+        depositConvertThunks: {
+            reducer(state, action) {
+                state.balance = state.balance + action.payload;
+                state.isLoading = false;
+            }
+        },
+        withdraw: {
+            reducer(state, action) {
+                state.balance = state.balance - action.payload
+            }
+        },
+        requestLoan: {
+            prepare(amount, purpose) {
+                return {
+                    payload: {
+                        amount, purpose
+                    }
+                };
+            },
+            reducer(state, action) {
 
-        case "account/payLoan":
+                if (state.loan > 0) {
+                    return;
+                }
 
-            return {
-                ...state,
-                loan: 0,
-                loanPurpose: "",
-                balance: state.balance - state.loan
-            };
-
-        case "account/convertingCurrency":
-
-            return {
-                ...state,
-                isLoading: true
-            };
-
-        default:
-            return state;
-
+                state.loan = action.payload.amount;
+                state.loanPurpose = action.payload.purpose;
+                state.balance = state.balance + action.payload.amount;
+            }
+        },
+        payLoan: {
+            reducer(state, action) {
+                state.balance = state.balance - state.loan;
+                state.loan = 0;
+                state.loanPurpose = "";
+            }
+        },
+        convertingCurrency: {
+            reducer(state, action) {
+                state.isLoading = true;
+            }
+        }
     }
-}
+});
 
-/* Action Creators */
-export function deposit(amount) {
-    return { type: "account/deposit", payload: amount };
-}
 
 export function depositConvertThunks(amount, currency) {
 
@@ -85,24 +95,17 @@ export function depositConvertThunks(amount, currency) {
     }
 }
 
-export function withdraw(amount) {
-    return { type: "account/withdraw", payload: amount };
-}
 
-export function requestLoan(amount = 0, purpose = "") {
-    return {
-        type: "account/requestLoan",
-        payload: {
-            amount: amount,
-            purpose: purpose
-        }
-    };
-}
+console.log(accountSlice);
 
-export function payLoan() {
-    return {
-        type: "account/payLoan",
-    };
-}
+export const {
+    deposit,
+    withdraw,
+    payLoan,
+    requestLoan
+} = accountSlice.actions;
+
+export default accountSlice.reducer;
+
 
 

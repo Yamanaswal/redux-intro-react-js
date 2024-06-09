@@ -1,4 +1,5 @@
 //Customer Redux
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialStateCustomer = {
     fullname: "",
@@ -6,42 +7,40 @@ const initialStateCustomer = {
     createdAt: ""
 };
 
-export default function customerReducer(state = initialStateCustomer, action) {
-    switch (action.type) {
-        case "customer/createCustomer":
+const customerSlice = createSlice({
+    //reducer name - customer
+    name: "customer",
 
-            return {
-                ...state,
-                fullname: action.payload.fullname,
-                nationalID: action.payload.nationalID,
-                createdAt: action.payload.createdAt,
+    initialState: initialStateCustomer,
+
+    reducers: {
+        createCustomer: {
+            prepare(fullname, nationalID) {
+                return {
+                    payload: {
+                        fullname,
+                        nationalID,
+                        createdAt: new Date().toISOString()
+                    }
+                }
+            },
+            reducer(state, action) {
+                state.fullname = action.payload.fullname;
+                state.nationalID = action.payload.nationalID;
+                state.createdAt = action.payload.createdAt;
             }
-
-        case "customer/updateCustomerName":
-            return {
-                ...state,
-                fullname: action.payload
+        },
+        updateCustomerName: {
+            reducer(state, action) {
+                state.fullname = action.payload;
             }
-
-        default:
-            return state;
-    }
-}
-
-export function createCustomer(fullname, nationalID) {
-    return {
-        type: "customer/createCustomer",
-        payload: {
-            fullname,
-            nationalID,
-            createdAt: new Date().toISOString()
         }
-    };
-}
+    }
+})
 
-export function updateCustomerName(fullname) {
-    return {
-        type: "customer/updateCustomerName",
-        payload: fullname
-    };
-}
+export const {
+    createCustomer,
+    updateCustomerName
+} = customerSlice.actions;
+
+export default customerSlice.reducer;

@@ -11,6 +11,8 @@ function useAccount() {
     });
 
     function depositMoney(amount, currency) {
+        console.log("depositMoney: ", amount, currency);
+
         if (currency === "USD") {
             dispatch(deposit(amount));
         } else {
